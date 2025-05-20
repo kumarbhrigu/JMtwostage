@@ -1,0 +1,34 @@
+Package: JMtwostage
+Type: Package
+Title: Two stage model for survival data with incomplete marker values
+Version: 0.1.0
+Imports: stats,lme4,insight,MASS,timereg,dplyr,stringr,survival,Matrix
+Authors@R: c(person(("Atanu"), "Bhattacharjee",
+                    email="atanustat@gmail.com",
+                    role=c("aut", "cre","ctb")),
+             person(("Bhrigu Kumar"), "Rajbongshi", role=c("aut","ctb")),
+             person(("Gajendra K"), "Vishwakarma", role=c("aut","ctb")))
+Maintainer: Atanu Bhattacharjee <atanustat@gmail.com>
+Description: This package provides a collection of functions for two satge 
+             joint modeling of longitudinal and survival data using various 
+             methods such as Complete case,Last Observation Carried Forward,
+             Multiple Imputation (MI), Inverse Probability Weighted (IPW).
+             It supports the modeling of time-dependent covariates in survival 
+             analysis and allows for flexible imputation techniques 
+             to handle missing data. The package is designed for use in survival
+             analysis with longitudinal biomarkers, providing tools for both
+             model fitting and evaluation.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Author: Atanu Bhattacharjee [aut, cre, ctb],
+        Bhrigu Kumar Rajbongshi [aut, ctb],
+        Gajendra K Vishwakarma [aut, ctb]
+RoxygenNote: 7.3.2
+Depends: R (>= 2.10)
+NeedsCompilation: no
+Packaged: 2025-04-05 09:10:27 UTC; bhrigu
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

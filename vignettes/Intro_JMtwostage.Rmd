@@ -1,0 +1,99 @@
+---
+title: "Code for prediction error"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Code for prediction error}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(JMtwostage)
+library(survival)
+```
+This vignette demonstrates how to use the `predError()` function to compute prediction error measures such as the Brier score for survival models fitted under various missing data approaches.
+
+The example illustrates the process of:
+* Fitting a joint model using the `jmwMI()` function, which combines multiple imputation and      inverse probability weighting for longitudinal and survival data.
+* Specifying a time-dependent Cox model with longitudinal biomarkers included as predictors.
+* Calculating prediction error using the `predError()` function, which internally uses the `brier()` function to evaluate model performance at multiple time points.
+
+**Note**: Ensure that the required input datasets (`long_data`, `surv_data`) are properly preprocessed and available in your environment before running the example code.
+```{r eval=FALSE}
+predError <- function(fitted.object,
+                      model_cov,
+                      newdata = NULL,
+                      nimp,
+                      times = seq(2, 10, 0.5),...) {
+
+  if (fitted.object$method == "MI" || fitted.object$method == "wMI") {
+    fitted_model <- fitted.object$fitted_model[[nimp]]
+  } else if (fitted.object$method %in% c("CC", "2s", "LOCF")) {
+    fitted_model <- fitted.object$fitted_model[[1]]
+  }
+
+  if (fitted.object$method %in% c("MI", "wMI")) {
+    data1 <- fitted.object$complete_data[[nimp]]
+  } else {
+    data1 <- fitted.object$complete_data
+  }
+  complete_data <- data1
+
+  if (fitted.object$method == "wMI") {
+    cfit <- coxph(
+      as.formula(paste0("Surv(tstart, tstop, new_event2) ~ ", paste0(model_cov, collapse = '+'))),
+      weights = complete_data$product_W_ij,
+      id = complete_data[["ID"]],
+      data = complete_data
+    )
+  } else {
+    cfit <- coxph(
+      as.formula(paste0("Surv(tstart, tstop, new_event2) ~ ", paste0(model_cov, collapse = '+'))),
+      id = complete_data[["ID"]],
+      data = complete_data
+    )
+  }
+
+  if (is.null(newdata)) {
+    newdata <- complete_data
+  }
+
+  brier_results <- brier(cfit, newdata = newdata, times = times,...)
+  return(brier_results)
+}
+
+model_wMI <- jmwMI(
+  ldata = long_data,
+  sdata = surv_data,
+  timeDep = c("marker_1", "marker_2", "marker_3"),
+  impModel = list(
+    marker_1 ~ Z_1 + Z_2 + Time + (1 | ID),
+    marker_2 ~ Z_1 + Z_2 + Time + (1 | ID),
+    marker_3 ~ Z_1 + Z_2 + Time + (1 | ID)
+  ),
+  ipwModel = list(
+    ~ Z_1 + Time + (1 | ID),
+    ~ Z_1 + Time + (1 | ID),
+    ~ Z_1 + Time + (1 | ID)
+  ),
+  visitTime = "Time",
+  coxModel = Surv(survival_time, survival_status) ~ Z_1 + Z_2 +
+    td(marker_1) + td(marker_2) + td(marker_3),
+  model = "Cox",
+  id = "ID"
+)
+
+predError(
+  fitted.object = model_wMI,
+  model_cov = c("Z_1", "Z_2", "marker_1", "marker_2", "marker_3"),
+  nimp = 1,
+  times = seq(2, 10, 0.5)
+)
+```

@@ -1,0 +1,19 @@
+#' Survival Data Example
+#'
+#' This dataset contains simulated survival data for multiple individuals with repeated measurements over time.
+#' It includes covariates, biomarkers, and survival outcomes for analysis in joint modeling or time-to-event studies.
+#' @docType data
+#' @usage data(surv_data)
+#' @format A data frame with 6 rows and 9 variables:
+#' \describe{
+#'   \item{ID}{\code{integer}: Unique identifier for each individual.}
+#'   \item{Time}{\code{integer}: Time point of the observation.}
+#'   \item{Z_1}{\code{numeric}: Time-independent covariate for each individual.}
+#'   \item{Z_2}{\code{integer}: Another time-independent covariate (binary).}
+#'   \item{marker_1}{\code{numeric}: Repeated measurements of the first biomarker over time.}
+#'   \item{marker_2}{\code{numeric}: Repeated measurements of the second biomarker over time.}
+#'   \item{marker_3}{\code{numeric}: Repeated measurements of the third biomarker over time.}
+#'   \item{survival_time}{\code{numeric}: Time to event or censoring for each individual.}
+#'   \item{survival_status}{\code{integer}: Survival status (1 = event occurred, 0 = censored).}
+#' }
+"surv_data"
