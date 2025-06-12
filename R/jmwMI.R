@@ -194,7 +194,7 @@ jmwMI <- function(ldata,
     if (model=="Cox"){
       fit<-suppressWarnings(coxph(as.formula(paste("Surv(time=tstart,time2=tstop,event=new_event2)~",
                                                      paste(c(tdnames,fnames),collapse="+"))),
-                                    data=datcom,weights=datcom[["product_W_ij"]],x=TRUE,id=datcom[,id]))
+                                    data=datcom,weights=datcom[["product_W_ij"]],x=TRUE))
       fitted_model[[m]]<-fit
       coefs<-rbind(coefs,summary(fit)$coef[,c("coef")])
       vars<-rbind(vars,(summary(fit)$coef[,c("se(coef)")])^2)
